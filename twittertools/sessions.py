@@ -1,9 +1,9 @@
 import time
-import db
 
 from twitter import *
 
-import tools
+import twittertools.db as db
+import twittertools.tools as tools
 
 def get_key():
     last_key = db.search_last_key()
@@ -25,7 +25,7 @@ class session:
         self.twitter = Twitter(auth = OAuth(keys["token"], keys["token_key"], keys["con_secret"], keys["con_secret_key"]))
 
 def main():
-    with open("accounts.csv", "r") as ins:
+    with open("twittertools/accounts.csv", "r") as ins:
         accounts = []
         for line in ins:
             line = line.replace("\n","")

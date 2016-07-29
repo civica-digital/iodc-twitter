@@ -15,13 +15,13 @@ def insert_profile(document):
     tweets.update({"_id":document["_id"]}, document, upsert= True)
     return None
 
-def insert_profile(document):
-    tweets.update({"_id":document["_id"]}, document, upsert= True)
-    return None
-
 def search_profile(profile_id):
-    profile = list(tweets.keys.find({"_id":profile_id}).limit(1))[0]
+    profile = list(tweets.find({"_id":profile_id}).limit(1))[0]
     return profile
+
+def get_next_queue():
+    next_id = db.queue.find({}).limit(1)
+    return next_id
 
 def delete_queue(id):
     queue.remove({"_id":id})
@@ -44,5 +44,7 @@ def search_last_key():
     return last_key
 
 def use_key(key_id):
-    keys.update({"_id":key_id}, {"last_used": datetime.datetime.now()}, upsert= True)
+    key_info = list(keys.find({"_id":key_id}))[0]
+    key_info["last_used"] = datetime.datetime.now()
+    keys.update({"_id":key_id}, key_info, upsert= True)
     return None

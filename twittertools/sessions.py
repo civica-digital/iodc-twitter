@@ -5,24 +5,28 @@ from twitter import *
 import twittertools.db as db
 import twittertools.tools as tools
 
-def get_key():
-    last_key = db.search_last_key()
-    db.use_key(last_key["_id"])
-    return last_key
 
 class session:
 
     def __init__(self):
-        keys = get_key()
+        keys = db.search_last_key()
         self.twitter = Twitter(auth = OAuth(keys["token"], keys["token_key"], keys["con_secret"], keys["con_secret_key"]))
+        self.current_key = keys["_id"]
 
-    def switch_keys(self, halt):
-        print("Switching Keys...")
+
+    def switch_keys(self, halt, field):
         if halt == True:
-            "[Overall rate limit reached, waiting for one minute]"
-            time.sleep(60)
-        keys = get_key()
+            print("[Manually reached an error from API, switching keys after 15 minutes]")
+            time.sleep(900)
+        keys = db.search_available_key(field)
         self.twitter = Twitter(auth = OAuth(keys["token"], keys["token_key"], keys["con_secret"], keys["con_secret_key"]))
+        self.current_key = keys["_id"]
+        print(self.current_key)
+
+    def control_call_count(self):
+        db.use_key(self, self.current_key)
+        return None
+
 
 def main():
     with open("twittertools/accounts.csv", "r") as ins:
